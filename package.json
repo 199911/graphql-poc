@@ -1,0 +1,12 @@
+{
+  "name": "graphql-poc",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@199911:199911/graphql-poc.git",
+  "author": "KU Lok Sun <sundaykuloksun@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "apollo-server": "^2.9.1",
+    "graphql": "^14.5.4"
+  }
+}
