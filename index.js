@@ -1,16 +1,32 @@
 const { ApolloServer, gql } = require('apollo-server');
+const { filter, find } = require('ramda')
 
 // This is a (sample) collection of books we'll be able to query
 // the GraphQL server for.  A more complete example might fetch
 // from an existing data source like a REST API or database.
 const books = [
   {
+    id: '1',
     title: 'Harry Potter and the Chamber of Secrets',
-    author: 'J.K. Rowling',
+    author: '1',
   },
   {
+    id: '2',
     title: 'Jurassic Park',
-    author: 'Michael Crichton',
+    author: '2',
+  },
+];
+
+const authors = [
+  {
+    id: '1',
+    name: 'J.K. Rowling',
+    books: ['1'],
+  },
+  {
+    id: '2',
+    name: 'Michael Crichton',
+    books: ['2'],
   },
 ];
 
@@ -22,13 +38,19 @@ const typeDefs = gql`
   # This "Book" type can be used in other type declarations.
   type Book {
     title: String
-    author: String
+    author: Author
+  }
+
+  type Author {
+    name: String
+    books: [Book]
   }
 
   # The "Query" type is the root of all GraphQL queries.
   # (A "Mutation" type will be covered later on.)
   type Query {
     books: [Book]
+    authors: [Author]
   }
 `;
 
@@ -37,7 +59,18 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     books: () => books,
+    authors: () => authors,
   },
+  Author: {
+    books(author) {
+      return filter(book => book.author === author.id, books);
+    },
+  },
+  Book: {
+    author(book) {
+      return find( author => book.author === author.id, authors);
+    },
+  }
 };
 
 // In the most basic sense, the ApolloServer can be started
