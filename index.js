@@ -1,5 +1,6 @@
 const { ApolloServer, gql } = require('apollo-server');
-const { filter, find } = require('ramda')
+const { filter, find } = require('ramda');
+const BookId = require('./BookId');
 
 // This is a (sample) collection of books we'll be able to query
 // the GraphQL server for.  A more complete example might fetch
@@ -33,10 +34,11 @@ const authors = [
 // Type definitions define the "shape" of your data and specify
 // which ways the data can be fetched from the GraphQL server.
 const typeDefs = gql`
-  # Comments in GraphQL are defined with the hash (#) symbol.
+  scalar BookId
 
   # This "Book" type can be used in other type declarations.
   type Book {
+    id: BookId
     title: String
     author: Author
   }
@@ -52,11 +54,16 @@ const typeDefs = gql`
     books: [Book]
     authors: [Author]
   }
+
+  type Mutation {
+    printBookId(id: BookId): Author
+  }
 `;
 
 // Resolvers define the technique for fetching the types in the
 // schema.  We'll retrieve books from the "books" array above.
 const resolvers = {
+  BookId,
   Query: {
     books: () => books,
     authors: () => authors,
@@ -70,6 +77,12 @@ const resolvers = {
     author(book) {
       return find( author => book.author === author.id, authors);
     },
+  },
+  Mutation: {
+    printBookId: (_,arg) => {
+      console.log('print');
+      console.log(arg)
+    }
   }
 };
 
