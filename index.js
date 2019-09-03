@@ -1,4 +1,4 @@
-const { ApolloServer, gql } = require('apollo-server');
+const { ApolloServer, gql } = require('apollo-server-express');
 const { filter, find } = require('ramda')
 
 // This is a (sample) collection of books we'll be able to query
