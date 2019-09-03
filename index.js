@@ -1,6 +1,11 @@
 const { ApolloServer, gql } = require('apollo-server');
 const { filter, find } = require('ramda')
 
+const resolve = (data) => {
+  console.log(data);
+  return Promise.resolve(data);
+}
+
 // This is a (sample) collection of books we'll be able to query
 // the GraphQL server for.  A more complete example might fetch
 // from an existing data source like a REST API or database.
@@ -58,7 +63,18 @@ const typeDefs = gql`
 // schema.  We'll retrieve books from the "books" array above.
 const resolvers = {
   Query: {
-    books: () => books,
+    books: () => resolve([
+      {
+        id: '1',
+        title: 'Harry Potter and the Chamber of Secrets',
+        author: '1',
+      },
+      resolve({
+        id: '2',
+        title: 'Jurassic Park',
+        author: '2',
+      }),
+    ]),
     authors: () => authors,
   },
   Author: {
