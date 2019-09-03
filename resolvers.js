@@ -22,6 +22,12 @@ const resolvers = {
       authors: () => authors,
     },
     Author: {
+      name(author) {
+        if (author.id === '7') {
+          throw new ApolloError('fail to get name of author');
+        }
+        return author.name;
+      },
       books(author) {
         throw new ApolloError('fail to find book');
         return books;
