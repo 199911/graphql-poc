@@ -18,6 +18,10 @@ app.use(
     console.log('This middleware will never be executed, as apollo middleware have end the request');
     next();
   },
+  (err, req,res,next) => {
+    console.log('Error')
+    next();
+  },
 );
 app.listen(
   port,
