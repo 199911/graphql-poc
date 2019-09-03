@@ -78,8 +78,17 @@ const resolvers = {
 // responsible for fetching the data for those types.
 const server = new ApolloServer({ typeDefs, resolvers });
 
-// This `listen` method launches a web-server.  Existing apps
-// can utilize middleware options, which we'll discuss later.
-server.listen().then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
-});
+const express = require('express')
+const bodyParser = require('body-parser')
+const app = express()
+const port = 4000
+
+app.use(bodyParser.json());
+app.get('/', (req, res) => res.send('Hello World!'))
+server.applyMiddleware({ app });
+app.listen(
+  port,
+  () => {
+    console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+  }
+);

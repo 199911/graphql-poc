@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "apollo-server-express": "^2.9.3",
+    "express": "^4.17.1",
     "graphql": "^14.5.4",
     "ramda": "^0.26.1"
   },
