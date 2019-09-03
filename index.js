@@ -33,17 +33,18 @@ const authors = [
 // Type definitions define the "shape" of your data and specify
 // which ways the data can be fetched from the GraphQL server.
 const typeDefs = gql`
-  # Comments in GraphQL are defined with the hash (#) symbol.
+
+  union Maybe = Book | Author
 
   # This "Book" type can be used in other type declarations.
   type Book {
     title: String
-    author: Author
+    author: Author!
   }
 
   type Author {
     name: String
-    books: [Book]
+    books: [Book]!
   }
 
   # The "Query" type is the root of all GraphQL queries.
@@ -57,6 +58,18 @@ const typeDefs = gql`
 // Resolvers define the technique for fetching the types in the
 // schema.  We'll retrieve books from the "books" array above.
 const resolvers = {
+  Maybe: {
+    __resolveType: (obj) => {
+      // Make sure the field we check is required field and non-null
+      if (books) {
+        return 'Author'
+      }
+      if (author) {
+        return 'Book'
+      }
+
+    },
+  },
   Query: {
     books: () => books,
     authors: () => authors,
