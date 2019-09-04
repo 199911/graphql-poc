@@ -1,5 +1,5 @@
 const { ApolloServer, gql } = require('apollo-server');
-const { filter, find } = require('ramda')
+const DataLoader = require('dataloader')
 
 // Type definitions define the "shape" of your data and specify
 // which ways the data can be fetched from the GraphQL server.
@@ -30,29 +30,42 @@ const nodeFinder = nodes => {
   let cnt = 0;
   return ids => {
     console.log('nodeFinder cnt:', ++cnt, ids);
-    return ids.map(
-      id => nodes.find(
+    const result = ids.map(
+      id =>
+      nodes.find(
         n => n.id === id
       )
     )
+    return Promise.resolve(result);
   }
 }
 
-// Resolvers define the technique for fetching the types in the
-// schema.  We'll retrieve books from the "books" array above.
+const withDataloader = true;
+
 const resolvers = {
   Query: {
-    tree: (parent, args, context, info) => {
+    tree: async (parent, args, context, info) => {
       const {root, nodes} = args;
       const find = nodeFinder(nodes)
+      const nodeLoader = new DataLoader(find);
       context.find = find;
-      const [rootNode] = find([root])
-      return rootNode;
+      context.nodeLoader = nodeLoader;
+
+      if (withDataloader) {
+        return nodeLoader.load(root)
+      } else {
+        const [rootNode] = await find([root])
+        return rootNode;
+      }
     }
   },
   Node: {
     leaves: (parent, args, context, info) => {
-      return context.find(parent.leaves)
+      if (withDataloader) {
+        return context.nodeLoader.loadMany(parent.leaves)
+      } else {
+        return context.find(parent.leaves)
+      }
     }
   }
 };
