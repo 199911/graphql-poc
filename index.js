@@ -26,21 +26,33 @@ const typeDefs = gql`
   }
 `;
 
+const nodeFinder = nodes => {
+  let cnt = 0;
+  return ids => {
+    console.log('nodeFinder cnt:', ++cnt, ids);
+    return ids.map(
+      id => nodes.find(
+        n => n.id === id
+      )
+    )
+  }
+}
+
 // Resolvers define the technique for fetching the types in the
 // schema.  We'll retrieve books from the "books" array above.
 const resolvers = {
   Query: {
     tree: (parent, args, context, info) => {
-      return {
-        id: 1,
-        leaves: []
-      };
+      const {root, nodes} = args;
+      const find = nodeFinder(nodes)
+      context.find = find;
+      const [rootNode] = find([root])
+      return rootNode;
     }
   },
-  Node: () => {
-    return {
-      id: 1,
-      leaves: []
+  Node: {
+    leaves: (parent, args, context, info) => {
+      return context.find(parent.leaves)
     }
   }
 };
