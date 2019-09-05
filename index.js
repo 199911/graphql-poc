@@ -45,16 +45,11 @@ const withDataloader = true;
 const resolvers = {
   Query: {
     tree: async (parent, args, context, info) => {
-      const {root, nodes} = args;
-      const find = nodeFinder(nodes)
-      const nodeLoader = new DataLoader(find);
-      context.find = find;
-      context.nodeLoader = nodeLoader;
-
+      const { root } = args;
       if (withDataloader) {
-        return nodeLoader.load(root)
+        return context.nodeLoader.load(root)
       } else {
-        const [rootNode] = await find([root])
+        const [rootNode] = await context.find([root])
         return rootNode;
       }
     }
@@ -70,10 +65,22 @@ const resolvers = {
   }
 };
 
+const context = ({ req }) => {
+  const variables = req.body.variables;
+  const nodes = variables.nodes;
+  const find = nodeFinder(nodes)
+  const nodeLoader = new DataLoader(find);
+  return {
+    nodes: req.body.variables.nodes,
+    find,
+    nodeLoader,
+  }
+};
+
 // In the most basic sense, the ApolloServer can be started
 // by passing type definitions (typeDefs) and the resolvers
 // responsible for fetching the data for those types.
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({ typeDefs, resolvers, context });
 
 // This `listen` method launches a web-server.  Existing apps
 // can utilize middleware options, which we'll discuss later.
