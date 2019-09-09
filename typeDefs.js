@@ -9,7 +9,10 @@ const typeDefs = gql`
   }
 
   type Author @cacheControl(maxAge: 10, scope: private) {
-    name: String
+    # Field's maxAge must be smaller than the Object's
+    # Otherwise, field's maxAge will be override
+    # and it is meaningless to define it
+    name: String @cacheControl(maxAge: 5, scope: private)
     books: [Book]
   }
 
