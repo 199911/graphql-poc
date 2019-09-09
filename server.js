@@ -19,6 +19,9 @@ const server = new ApolloServer({
     console.log(Object.keys(params));
     console.log(params);
   },
+  // Playground does not support GET method
+  // https://github.com/prisma/graphql-playground/issues/1024
+  playground: false,
 });
 
 module.exports = server;
