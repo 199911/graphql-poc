@@ -8,20 +8,10 @@ const resolvers = require('./resolvers');
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: (params) => {
-    console.log('context');
-    console.log(Object.keys(params));
-  },
-  formatResponse: (params) => {
-    // We can use this as a post-GraphQL middleware
-    // But the limitation is we cannot access express context object, like (req, res, context)
-    console.log('formatResponse');
-    console.log(Object.keys(params));
-    console.log(params);
-  },
   // Playground does not support GET method
   // https://github.com/prisma/graphql-playground/issues/1024
   playground: false,
+  // cacheControl options is not required to use cache control directive
 });
 
 module.exports = server;
